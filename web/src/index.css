@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 45 29% 97%; /* #F8F6F1 */
+    --foreground: 0 0% 20%; /* #333333 */
+    --primary: 124 41% 55%; /* #5DBB63 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 36 100% 57%; /* #FFA726 */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 45 20% 90%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 124 41% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 45 20% 85%;
+    --input: 45 20% 85%;
+    --ring: 124 41% 55%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    /* Use Tailwind's box-border utility to set box-sizing */
+    @apply box-border;
+  }
+  body {
+    @apply bg-background text-foreground font-['Poppins',sans-serif];
+  }
+}
