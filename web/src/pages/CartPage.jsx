@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabaseClient.js';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 
 const CartPage = () => {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
 
   const [formData, setFormData] = useState({
     nama: '',
@@ -29,29 +29,20 @@ const CartPage = () => {
       return;
     }
 
+    if (!formData.nama || !formData.hp || !formData.alamat) {
+      alert("Mohon lengkapi data pemesan");
+      return;
+    }
+
     try {
       setLoading(true);
 
-      // ==============================
-      // VALIDASI PRODUCT ID
-      // ==============================
-      const itemsForDB = cartItems.map(item => {
-        const productId = item.productId || item.id;
+      const itemsForDB = cartItems.map(item => ({
+        product_id: item.productId || item.id,
+        quantity: item.quantity,
+        price: item.price
+      }));
 
-        if (!productId) {
-          throw new Error(`Product ID tidak ditemukan untuk produk: ${item.name}`);
-        }
-
-        return {
-          product_id: productId,
-          quantity: item.quantity,
-          price: item.price
-        };
-      });
-
-      // ==============================
-      // PANGGIL RPC TRANSACTION
-      // ==============================
       const { data: orderId, error } = await supabase.rpc(
         "create_order_transaction",
         {
@@ -74,9 +65,13 @@ const CartPage = () => {
       message += `Nama: ${formData.nama}\n`;
       message += `No HP: ${formData.hp}\n`;
       message += `Alamat: ${formData.alamat}\n`;
-      if (formData.catatan) message += `Catatan: ${formData.catatan}\n`;
+
+      if (formData.catatan) {
+        message += `Catatan: ${formData.catatan}\n`;
+      }
 
       message += `\n*Daftar Pesanan:*\n`;
+
       cartItems.forEach((item, index) => {
         message += `${index + 1}. ${item.name} (${item.quantity}x) - Rp ${(item.price * item.quantity).toLocaleString('id-ID')}\n`;
       });
@@ -88,18 +83,15 @@ const CartPage = () => {
       // ==============================
       // CLEAR CART
       // ==============================
-      cartItems.forEach(item => {
-        const productId = item.productId || item.id;
-        removeFromCart(productId);
-      });
+      clearCart();
 
       // ==============================
-      // REDIRECT WHATSAPP
+      // REDIRECT WHATSAPP (ANTI BLOCK MOBILE)
       // ==============================
-      window.open(
-        `https://wa.me/6282125646353?text=${encodedMessage}`,
-        "_blank"
-      );
+      const waUrl = `https://wa.me/6282125646353?text=${encodedMessage}`;
+
+      // Gunakan assign agar tidak dianggap popup
+      window.location.assign(waUrl);
 
     } catch (err) {
       console.error(err);
@@ -138,7 +130,6 @@ const CartPage = () => {
 
         <div className="flex flex-col lg:flex-row gap-10">
 
-          {/* CART ITEMS */}
           <div className="lg:w-2/3">
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100">
               <div className="p-6 md:p-8 space-y-8">
@@ -178,7 +169,6 @@ const CartPage = () => {
             </div>
           </div>
 
-          {/* CHECKOUT FORM */}
           <div className="lg:w-1/3">
             <div className="bg-white rounded-3xl shadow-sm p-8 sticky top-24 border border-gray-100">
               <h2 className="text-2xl font-bold mb-6">Ringkasan Pesanan</h2>
