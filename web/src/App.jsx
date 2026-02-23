@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import AboutPage from './pages/AboutPage.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import QRPage from "./pages/QRPage";
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                                 <Route path="/" element={<HomePage />} />
                                 <Route path="/produk" element={<ProductsPage />} />
                                 <Route path="/cart" element={<CartPage />} />
+                                <Route path="/qr" element={<QRPage />} />
                                 <Route path="/about" element={<AboutPage />} />
                                 <Route path="/login" element={<LoginPage />} />
                                 <Route 
